@@ -3,12 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 90;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		067023672DD2A6C900C6467C /* RoomPlan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 067023662DD2A6C900C6467C /* RoomPlan.framework */; };
-		067023692DD2A6D800C6467C /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 067023682DD2A6D800C6467C /* ARKit.framework */; };
+		06F213E42DD3B57100690A1C /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 067023682DD2A6D800C6467C /* ARKit.framework */; };
+		06F213E72DD3B57200690A1C /* RealityFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06F213D72DD39DA600690A1C /* RealityFoundation.framework */; };
+		06F213E92DD3B57300690A1C /* RealityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06F213D82DD39DA600690A1C /* RealityKit.framework */; };
+		06F213EB2DD3B57500690A1C /* RoomPlan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 067023662DD2A6C900C6467C /* RoomPlan.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +36,8 @@
 		06EA4F212DD15E2900F62FC3 /* Mosaic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mosaic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		06EA4F2E2DD15E2B00F62FC3 /* MosaicTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MosaicTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		06EA4F382DD15E2B00F62FC3 /* MosaicUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MosaicUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		06F213D72DD39DA600690A1C /* RealityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityFoundation.framework; path = System/Library/Frameworks/RealityFoundation.framework; sourceTree = SDKROOT; };
+		06F213D82DD39DA600690A1C /* RealityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityKit.framework; path = System/Library/Frameworks/RealityKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -57,26 +61,22 @@
 /* Begin PBXFrameworksBuildPhase section */
 		06EA4F1E2DD15E2900F62FC3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
-				067023692DD2A6D800C6467C /* ARKit.framework in Frameworks */,
-				067023672DD2A6C900C6467C /* RoomPlan.framework in Frameworks */,
+				06F213E72DD3B57200690A1C /* RealityFoundation.framework in Frameworks */,
+				06F213E42DD3B57100690A1C /* ARKit.framework in Frameworks */,
+				06F213EB2DD3B57500690A1C /* RoomPlan.framework in Frameworks */,
+				06F213E92DD3B57300690A1C /* RealityKit.framework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		06EA4F2B2DD15E2B00F62FC3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		06EA4F352DD15E2B00F62FC3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -84,6 +84,8 @@
 		067023652DD2A6C900C6467C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				06F213D72DD39DA600690A1C /* RealityFoundation.framework */,
+				06F213D82DD39DA600690A1C /* RealityKit.framework */,
 				067023682DD2A6D800C6467C /* ARKit.framework */,
 				067023662DD2A6C900C6467C /* RoomPlan.framework */,
 			);
@@ -124,14 +126,10 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
 				06EA4F232DD15E2900F62FC3 /* Mosaic */,
 			);
 			name = Mosaic;
-			packageProductDependencies = (
-			);
 			productName = Mosaic;
 			productReference = 06EA4F212DD15E2900F62FC3 /* Mosaic.app */;
 			productType = "com.apple.product-type.application";
@@ -153,8 +151,6 @@
 				06EA4F312DD15E2B00F62FC3 /* MosaicTests */,
 			);
 			name = MosaicTests;
-			packageProductDependencies = (
-			);
 			productName = MosaicTests;
 			productReference = 06EA4F2E2DD15E2B00F62FC3 /* MosaicTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -176,8 +172,6 @@
 				06EA4F3B2DD15E2B00F62FC3 /* MosaicUITests */,
 			);
 			name = MosaicUITests;
-			packageProductDependencies = (
-			);
 			productName = MosaicUITests;
 			productReference = 06EA4F382DD15E2B00F62FC3 /* MosaicUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -214,7 +208,7 @@
 			);
 			mainGroup = 06EA4F182DD15E2900F62FC3;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 90;
 			productRefGroup = 06EA4F222DD15E2900F62FC3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -229,48 +223,36 @@
 /* Begin PBXResourcesBuildPhase section */
 		06EA4F1F2DD15E2900F62FC3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		06EA4F2C2DD15E2B00F62FC3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		06EA4F362DD15E2B00F62FC3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		06EA4F1D2DD15E2900F62FC3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		06EA4F2A2DD15E2B00F62FC3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		06EA4F342DD15E2B00F62FC3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -288,7 +270,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		06EA4F402DD15E2B00F62FC3 /* Debug */ = {
+		06EA4F402DD15E2B00F62FC3 /* Debug configuration for PBXProject "Mosaic" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -352,7 +334,7 @@
 			};
 			name = Debug;
 		};
-		06EA4F412DD15E2B00F62FC3 /* Release */ = {
+		06EA4F412DD15E2B00F62FC3 /* Release configuration for PBXProject "Mosaic" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -409,7 +391,7 @@
 			};
 			name = Release;
 		};
-		06EA4F432DD15E2B00F62FC3 /* Debug */ = {
+		06EA4F432DD15E2B00F62FC3 /* Debug configuration for PBXNativeTarget "Mosaic" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -446,7 +428,7 @@
 			};
 			name = Debug;
 		};
-		06EA4F442DD15E2B00F62FC3 /* Release */ = {
+		06EA4F442DD15E2B00F62FC3 /* Release configuration for PBXNativeTarget "Mosaic" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -483,7 +465,7 @@
 			};
 			name = Release;
 		};
-		06EA4F462DD15E2B00F62FC3 /* Debug */ = {
+		06EA4F462DD15E2B00F62FC3 /* Debug configuration for PBXNativeTarget "MosaicTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -502,7 +484,7 @@
 			};
 			name = Debug;
 		};
-		06EA4F472DD15E2B00F62FC3 /* Release */ = {
+		06EA4F472DD15E2B00F62FC3 /* Release configuration for PBXNativeTarget "MosaicTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -521,7 +503,7 @@
 			};
 			name = Release;
 		};
-		06EA4F492DD15E2B00F62FC3 /* Debug */ = {
+		06EA4F492DD15E2B00F62FC3 /* Debug configuration for PBXNativeTarget "MosaicUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -538,7 +520,7 @@
 			};
 			name = Debug;
 		};
-		06EA4F4A2DD15E2B00F62FC3 /* Release */ = {
+		06EA4F4A2DD15E2B00F62FC3 /* Release configuration for PBXNativeTarget "MosaicUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -561,37 +543,33 @@
 		06EA4F1C2DD15E2900F62FC3 /* Build configuration list for PBXProject "Mosaic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06EA4F402DD15E2B00F62FC3 /* Debug */,
-				06EA4F412DD15E2B00F62FC3 /* Release */,
+				06EA4F402DD15E2B00F62FC3 /* Debug configuration for PBXProject "Mosaic" */,
+				06EA4F412DD15E2B00F62FC3 /* Release configuration for PBXProject "Mosaic" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		06EA4F422DD15E2B00F62FC3 /* Build configuration list for PBXNativeTarget "Mosaic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06EA4F432DD15E2B00F62FC3 /* Debug */,
-				06EA4F442DD15E2B00F62FC3 /* Release */,
+				06EA4F432DD15E2B00F62FC3 /* Debug configuration for PBXNativeTarget "Mosaic" */,
+				06EA4F442DD15E2B00F62FC3 /* Release configuration for PBXNativeTarget "Mosaic" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		06EA4F452DD15E2B00F62FC3 /* Build configuration list for PBXNativeTarget "MosaicTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06EA4F462DD15E2B00F62FC3 /* Debug */,
-				06EA4F472DD15E2B00F62FC3 /* Release */,
+				06EA4F462DD15E2B00F62FC3 /* Debug configuration for PBXNativeTarget "MosaicTests" */,
+				06EA4F472DD15E2B00F62FC3 /* Release configuration for PBXNativeTarget "MosaicTests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		06EA4F482DD15E2B00F62FC3 /* Build configuration list for PBXNativeTarget "MosaicUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06EA4F492DD15E2B00F62FC3 /* Debug */,
-				06EA4F4A2DD15E2B00F62FC3 /* Release */,
+				06EA4F492DD15E2B00F62FC3 /* Debug configuration for PBXNativeTarget "MosaicUITests" */,
+				06EA4F4A2DD15E2B00F62FC3 /* Release configuration for PBXNativeTarget "MosaicUITests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */

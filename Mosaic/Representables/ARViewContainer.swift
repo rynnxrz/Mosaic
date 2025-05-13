@@ -1,115 +1,131 @@
+//
+//  ARViewContainer.swift
+//  Mosaic
+//
+//  Displays a USDZ (or other Reality File) in an ARView.
+//  Owns its OWN ARSession but pauses it in `dismantleUIView`.
+//
+
 import SwiftUI
 import RealityKit
 import ARKit
+import Combine
 
 struct ARViewContainer: UIViewRepresentable {
+
     var modelURL: URL?
 
+    // Keep a single ARView instance so its session survives updates
+    private let arView = ARView(frame: .zero,
+                                cameraMode: .ar,
+                                automaticallyConfigureSession: true)
+
+    // MARK: – UIViewRepresentable
     func makeUIView(context: Context) -> ARView {
-        let arView = ARView(frame: .zero)
-        let config = ARWorldTrackingConfiguration()
-        config.planeDetection = [.horizontal, .vertical]
-        arView.session.run(config)
+        print("[ARView] makeUIView")
+
+        // If ARView didn’t autoconfigure, give it a simple config
+        if arView.session.configuration == nil {
+            let cfg = ARWorldTrackingConfiguration()
+            cfg.planeDetection = [.horizontal, .vertical]
+            arView.session.run(cfg,
+                               options: [.resetTracking, .removeExistingAnchors])
+        }
+
         context.coordinator.arView = arView
-        context.coordinator.setupGestures()
+        context.coordinator.installGestures()
         return arView
     }
 
     func updateUIView(_ uiView: ARView, context: Context) {
-        uiView.scene.anchors.forEach { $0.removeFromParent() }
+        print("[ARView] updateUIView – model=\(modelURL?.lastPathComponent ?? "nil")")
 
-        if let url = modelURL {
-            Task {
-                do {
-                    let modelEntity = try await Entity.loadModel(contentsOf: url)
-                    let anchorEntity = AnchorEntity(world: .zero)
-                    anchorEntity.addChild(modelEntity)
+        uiView.scene.anchors.removeAll()                 // clear previous model
 
-                    let bounds = modelEntity.visualBounds(relativeTo: anchorEntity)
-                    modelEntity.position = SIMD3<Float>(
-                        -bounds.center.x,
-                        -bounds.center.y,
-                        -bounds.center.z
-                    )
+        guard let url = modelURL else { return }
 
-                    DispatchQueue.main.async {
-                        uiView.scene.addAnchor(anchorEntity)
-                    }
-                } catch {
-                    print("Error loading model: \(error.localizedDescription)")
+        Task { @MainActor in
+            do {
+                let modelEntity = try await loadModel(from: url)
+                let anchor      = AnchorEntity(world: .zero)
+                anchor.addChild(modelEntity)
+                uiView.scene.addAnchor(anchor)
+
+                // Center model
+                DispatchQueue.main.async {
+                    let bounds = modelEntity.visualBounds(relativeTo: anchor)
+                    modelEntity.position = -bounds.center
                 }
+            } catch {
+                print("[ARView] load error: \(error.localizedDescription)")
             }
         }
     }
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+    static func dismantleUIView(_ uiView: ARView,
+                                coordinator: Coordinator)
+    {
+        print("[ARView] dismantleUIView – pausing session")
+        uiView.session.pause()
     }
 
-    class Coordinator: NSObject {
-        var parent: ARViewContainer
+    // MARK: – Model loading
+    private func loadModel(from url: URL) async throws -> ModelEntity {
+        if #available(iOS 18.0, *) {
+            return try await ModelEntity(contentsOf: url)
+        } else {
+            return try await withCheckedThrowingContinuation { cont in
+                var cancellable: AnyCancellable?
+                cancellable = Entity.loadModelAsync(contentsOf: url)
+                    .sink { completion in
+                        if case .failure(let err) = completion { cont.resume(throwing: err) }
+                        cancellable?.cancel()
+                    } receiveValue: { ent in cont.resume(returning: ent) }
+            }
+        }
+    }
+
+    // MARK: – Coordinator for gestures
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    final class Coordinator: NSObject {
         weak var arView: ARView?
-        private var startingPanTransform: simd_float4x4?
-        private var startingPinchDistance: CGFloat = 1.0
-        private var currentScale: Float = 1.0
+        private var initialTransform: simd_float4x4?
+        private var baseScale: Float = 1
 
-        init(_ parent: ARViewContainer) {
-            self.parent = parent
+        // Gesture setup once
+        func installGestures() {
+            guard let view = arView, view.gestureRecognizers?.isEmpty ?? true else { return }
+            view.addGestureRecognizer(UIPanGestureRecognizer(target: self,
+                                                             action: #selector(pan(_:))))
+            view.addGestureRecognizer(UIPinchGestureRecognizer(target: self,
+                                                               action: #selector(pinch(_:))))
         }
 
-        func setupGestures() {
-            guard let arView = arView else { return }
-            arView.addGestureRecognizer(
-                UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-            )
-            arView.addGestureRecognizer(
-                UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
-            )
-        }
-
-        @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-            guard
-                let arView = arView,
-                let rootEntity = arView.scene.anchors.first
-            else { return }
-
-            switch gesture.state {
+        // ───── Pan = rotate model
+        @objc private func pan(_ g: UIPanGestureRecognizer) {
+            guard let view = arView, let anchor = view.scene.anchors.first else { return }
+            switch g.state {
             case .began:
-                startingPanTransform = rootEntity.transform.matrix
+                initialTransform = anchor.transform.matrix
             case .changed:
-                guard let startMatrix = startingPanTransform else { return }
-                let translation = gesture.translation(in: arView)
-                let rotY = Float(translation.x) * 0.01
-                let rotX = Float(translation.y) * 0.01
-
-                var matrix = startMatrix
-                matrix = matrix * simd_float4x4(simd_quaternion(rotX, SIMD3<Float>(1, 0, 0)))
-                matrix = matrix * simd_float4x4(simd_quaternion(rotY, SIMD3<Float>(0, 1, 0)))
-
-                rootEntity.transform = Transform(matrix: matrix)
-            default:
-                break
+                guard let start = initialTransform else { return }
+                let t = g.translation(in: view)
+                let rotX = simd_quatf(angle: Float(t.y) * 0.005, axis: [1,0,0])
+                let rotY = simd_quatf(angle: Float(t.x) * 0.005, axis: [0,1,0])
+                anchor.transform.matrix = start * simd_float4x4(rotY * rotX)
+            default: break
             }
         }
 
-        @objc func handlePinch(_ gesture: UIPinchGestureRecognizer) {
-            guard
-                let arView = arView,
-                let rootEntity = arView.scene.anchors.first
-            else { return }
-
-            switch gesture.state {
-            case .began:
-                startingPinchDistance = gesture.scale
-            case .changed:
-                let delta = Float(gesture.scale / startingPinchDistance)
-                var newScale = currentScale * delta
-                newScale = min(max(newScale, 0.1), 10.0)
-                rootEntity.scale = SIMD3<Float>(newScale, newScale, newScale)
-                currentScale = newScale
-                startingPinchDistance = gesture.scale
-            default:
-                break
+        // ───── Pinch = scale model
+        @objc private func pinch(_ g: UIPinchGestureRecognizer) {
+            guard let view = arView, let anchor = view.scene.anchors.first else { return }
+            if g.state == .changed {
+                anchor.scale = SIMD3(repeating: baseScale * Float(g.scale))
+            } else if g.state == .ended || g.state == .cancelled {
+                baseScale = anchor.scale.x
+                g.scale = 1
             }
         }
     }
